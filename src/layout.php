@@ -376,10 +376,8 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
 <body>
     <div class="site-shell">
         <div class="logo-row row-inner">
-            <a href="{$base}/public" style="cursor:pointer;display:contents;">
+            <a href="{$base}/public" style="display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none;">
                 <img class="logo" src="{$base}/public/logo.png" alt="Logo">
-            </a>
-            <a href="{$base}/public" style="cursor:pointer;display:contents;">
                 <img class="logo-kabi" src="{$base}/public/kabi-test.png" alt="Kabi-Test">
             </a>
         </div>
