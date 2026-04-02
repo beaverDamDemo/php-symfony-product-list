@@ -316,12 +316,20 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
         }
 
         @media (max-width: 480px) {
+            .product-card {
+                min-height: auto;
+            }
+
             .product-desc-full {
                 display: none;
             }
 
             .product-desc-accordion {
                 display: block;
+            }
+
+            .product-more-btn {
+                margin-top: 10px;
             }
         }
 
@@ -407,6 +415,11 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
         }
 
         @media (max-width: 560px) {
+            .logo-row {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+
             .header-nav {
                 gap: 6px;
                 align-items: stretch;
