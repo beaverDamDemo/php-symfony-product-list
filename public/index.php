@@ -50,8 +50,8 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             --side-padding: clamp(14px, 4vw, 64px);
             --grid-bg: #f5f9fc;
             --grid-line: #d5e0ea;
-            --header-start: #1565c0;
-            --header-end: #2e7d32;
+            --header-start: #47c5ef;
+            --header-end: #6f87d7;
         }
 
         * {
@@ -114,8 +114,9 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
         }
 
         .header-row {
-            background: linear-gradient(110deg, var(--header-start), var(--header-end));
+            background: linear-gradient(to bottom, var(--header-start), var(--header-end));
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+            border-radius: 8px;
         }
 
         .header-nav {
@@ -138,6 +139,21 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             transition: background-color 0.2s ease;
         }
 
+        .nav-link + .nav-link {
+            position: relative;
+            margin-left: 16px;
+        }
+
+        .nav-link + .nav-link::before {
+            content: "|";
+            position: absolute;
+            left: -14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #c4ccd6;
+            font-weight: 700;
+        }
+
         .nav-link:hover,
         .nav-link.active {
             background-color: rgba(255, 255, 255, 0.2);
@@ -154,6 +170,8 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             border-radius: 10px;
             padding: 18px;
             max-width: 760px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .placeholder-card h1 {
@@ -209,10 +227,13 @@ $routes = new RouteCollection();
 
 $routes->add('home', new Route('/', [
     '_controller' => static function () {
+        $homeImageSrc = htmlspecialchars(getBasePath() . '/public/Copilot_20260402_230309.png', ENT_QUOTES, 'UTF-8');
+
         return renderLayout('Domov', 'home', '
-            <section class="placeholder-card">
-                <h1>Vsebina bo dodana kmalu</h1>
-                <p>Pripravljena je skupna struktura strani: mrežni CSS background, vrstica z logo PNG, gradient header in odzivna navigacija.</p>
+            <section class="placeholder-card" style="text-align:center;">
+                <h1>Domov</h1>
+                <p>Slika za začetno stran:</p>
+                <img src="' . $homeImageSrc . '" alt="Copilot 20260402 230309" style="display:block; width:min(100%, 900px); height:auto; margin:14px auto 0; border-radius:8px;">
             </section>
         ');
     },
