@@ -1,0 +1,49 @@
+[
+  {
+    "name": "Brezžične Slušalke NovaSound",
+    "subtitle": "Brezžična Avdio Oprema",
+    "description": [
+      "NovaSound brezžične slušalke so zasnovane za vsakodnevno uporabo, tako doma kot na poti. Ponujajo uravnotežen zvok z jasnimi visokimi toni in polnimi basi, udobne mehke blazinice pa poskrbijo za prijetno nošenje skozi ves dan.",
+      "Baterija zdrži do 20 ur predvajanja, polnjenje pa je hitro in preprosto. Stabilna bluetooth povezava zagotavlja nemoteno predvajanje glasbe, video klicev ali podcastov brez prekinitev."
+    ]
+  },
+  {
+    "name": "Pametna Ura FitPulse",
+    "subtitle": "Pametna Nosljiva Naprava",
+    "description": [
+      "FitPulse pametna ura je idealna spremljevalka aktivnega življenjskega sloga. Ves dan beleži korake, porabo kalorij in srčni utrip, ponoči pa analizira kakovost vašega spanca.",
+      "Zaslon prikazuje obvestila iz telefona, opomnik za gibanje in do deset različnih športnih načinov vadbe. Vmesnik je intuitiven in enostaven za uporabo tudi med aktivnostjo.",
+      "Ohišje je narejeno iz lahkih materialov, ugo pri nošenju pa je zagotovljeno z mehkim silikonskim pasom. Ura je primerna za nošenje pri delu, vadbi in vsakodnevnih opravilih."
+    ]
+  },
+  {
+    "name": "Prenosni Zvočnik WaveMini",
+    "subtitle": "Prenosna Zvočna Rešitev",
+    "description": [
+      "WaveMini je kompakten prenosni zvočnik, ki ga zlahka vzamete kamorkoli.",
+      "Kljub majhni velikosti ponuja poln zvok z izrazitimi basi in čistimi vokali.",
+      "Odpornost IPX5 ščiti pred škropljenjem, zato je zanesljiv ob bazenu ali na terasi.",
+      "Baterija omogoča več ur neprekinjenega predvajanja za vsako priložnost."
+    ]
+  },
+  {
+    "name": "Tipkovnica ProType",
+    "subtitle": "Profesionalna Vhodna Oprema",
+    "description": [
+      "ProType mehanska tipkovnica je namenjena vsem, ki tipkajo veliko in cenijo natančen odziv.",
+      "Tiha stikala zmanjšajo hrup in so primerna za pisarne ali pozne večerne ure dela.",
+      "Osvetlitev tipk izboljša vidljivost pri slabi svetlobi in doda eleganten videz delovni mizi.",
+      "Kakovostna gradnja zagotavlja dolgo življenjsko dobo in stabilen, udoben občutek pri tipkanju."
+    ]
+  },
+  {
+    "name": "Miška Glide X",
+    "subtitle": "Ergonomska Kontrolna Naprava",
+    "description": [
+      "Glide X je ergonomska brezžična miška, oblikovana za dolge ure udobnega dela z računalnikom.",
+      "Natančen optični senzor zagotavlja gladko premikanje kazalca na različnih površinah brez zamikov.",
+      "Tihi kliki zmanjšajo moteč hrup in so prijazni do okolice v skupnih prostorih.",
+      "Hitro polnjenje in dolga avtonomija baterije poskrbita, da miška nikoli ne bo na poti."
+    ]
+  }
+]

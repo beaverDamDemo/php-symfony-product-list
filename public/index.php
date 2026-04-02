@@ -18,11 +18,11 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
     $base = getBasePath();
 
     $navLinks = [
-        ['label' => 'Domov',      'href' => $base . '/public',    'key' => 'home'],
-        ['label' => 'O nas',      'href' => $base . '/o-nas',     'key' => 'about'],
-        ['label' => 'Kontakt',    'href' => $base . '/kontakt',   'key' => 'contact'],
-        ['label' => 'Pišite nam', 'href' => $base . '/pisite-nam', 'key' => 'write'],
-        ['label' => 'IZDELKI',    'href' => $base . '/izdelki',   'key' => 'products'],
+        ['label' => 'Domov',      'href' => $base . '/public',           'key' => 'home'],
+        ['label' => 'O nas',      'href' => $base . '/public/o-nas',     'key' => 'about'],
+        ['label' => 'Kontakt',    'href' => $base . '/public/kontakt',   'key' => 'contact'],
+        ['label' => 'Pišite nam', 'href' => $base . '/public/pisite-nam', 'key' => 'write'],
+        ['label' => 'IZDELKI',    'href' => $base . '/public/izdelki',   'key' => 'products'],
     ];
 
     $menuHtml = '';
@@ -190,6 +190,97 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             line-height: 1.55;
         }
 
+        .products-wrap {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        @media (max-width: 720px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(17, 37, 58, 0.14);
+            border-radius: 10px;
+            overflow: hidden;
+            padding: 0;
+            min-height: 560px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .product-body {
+            padding: 32px 32px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .product-name {
+            margin: 0 0 8px;
+            font-size: 22px;
+        }
+
+        .product-subtitle {
+            margin: 0 0 18px;
+            font-weight: 700;
+            color: #455a70;
+            font-size: 17px;
+            letter-spacing: 0.01em;
+        }
+
+        .product-description {
+            margin: 0 0 12px;
+            color: #455a70;
+            line-height: 1.5;
+        }
+
+        .product-more-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            align-self: flex-start;
+            width: auto;
+            max-width: 100%;
+            background: transparent;
+            border: 1px solid #5ea1e1;
+            color: #5ea1e1;
+            border-radius: 8px;
+            padding: 14px 20px;
+            font-weight: 700;
+            text-decoration: none;
+            margin-top: auto;
+            line-height: 1;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .product-more-btn:hover {
+            background-color: #5ea1e1;
+            color: #ffffff;
+        }
+
         @media (max-width: 560px) {
             .header-nav {
                 gap: 6px;
@@ -260,6 +351,86 @@ HTML;
     return new Response($html);
 }
 
+function loadProductsFromJson(string $jsonPath): array
+{
+    if (!is_file($jsonPath) || !is_readable($jsonPath)) {
+        return [];
+    }
+
+    $json = file_get_contents($jsonPath);
+    if ($json === false) {
+        return [];
+    }
+
+    $decoded = json_decode($json, true);
+    if (!is_array($decoded)) {
+        return [];
+    }
+
+    $products = [];
+    foreach ($decoded as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+
+        $rawDesc = $item['description'] ?? '';
+        $paragraphs = is_array($rawDesc)
+            ? array_values(array_filter($rawDesc, 'is_string'))
+            : [(string) $rawDesc];
+
+        $products[] = [
+            'name'        => (string) ($item['name'] ?? 'Izdelek'),
+            'subtitle'    => (string) ($item['subtitle'] ?? ''),
+            'description' => $paragraphs,
+        ];
+    }
+
+    return array_slice($products, 0, 5);
+}
+
+function renderProductsContent(array $products): string
+{
+    if ($products === []) {
+        return '
+            <section class="placeholder-card">
+                <h1>Izdelki</h1>
+                <p>Podatki o izdelkih niso na voljo.</p>
+            </section>
+        ';
+    }
+
+    $cards = '';
+    $basePath = getBasePath();
+    foreach ($products as $index => $product) {
+        $serialNumber = $index + 1;
+        $imageSrc = htmlspecialchars($basePath . '/public/izdelek-' . $serialNumber . '.jpg', ENT_QUOTES, 'UTF-8');
+        $name        = htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8');
+        $subtitle    = htmlspecialchars($product['subtitle'], ENT_QUOTES, 'UTF-8');
+        $descHtml    = '';
+        foreach ($product['description'] as $para) {
+            $descHtml .= '<p class="product-description">' . htmlspecialchars($para, ENT_QUOTES, 'UTF-8') . '</p>';
+        }
+
+        $cards .= '
+            <article class="product-card">
+                <img class="product-image" src="' . $imageSrc . '" alt="Izdelek ' . $serialNumber . '">
+                <div class="product-body">
+                    <h2 class="product-name">' . $name . '</h2>
+                    <h3 class="product-subtitle">' . $subtitle . '</h3>
+                    ' . $descHtml . '
+                    <button class="product-more-btn" type="button">+ VEČ O IZDELKU ' . $serialNumber . '</button>
+                </div>
+            </article>
+        ';
+    }
+
+    return '
+        <section class="products-wrap">
+            <div class="products-grid">' . $cards . '</div>
+        </section>
+    ';
+}
+
 // Create routes
 $routes = new RouteCollection();
 
@@ -268,9 +439,7 @@ $routes->add('home', new Route('/', [
         $homeImageSrc = htmlspecialchars(getBasePath() . '/public/Copilot_20260402_230309.png', ENT_QUOTES, 'UTF-8');
 
         return renderLayout('Domov', 'home', '
-            <section class="placeholder-card" style="text-align:center;">
-                <h1>Domov</h1>
-                <p>Slika za začetno stran:</p>
+            <section class="" style="text-align:center;">
                 <img src="' . $homeImageSrc . '" alt="Copilot 20260402 230309" style="display:block; width:min(100%, 900px); height:auto; margin:14px auto 0; border-radius:8px;">
             </section>
         ');
@@ -281,23 +450,15 @@ $routes->add('home', new Route('/', [
 
 $routes->add('products', new Route('/products', [
     '_controller' => static function () {
-        return renderLayout('Izdelki', 'products', '
-            <section class="placeholder-card">
-                <h1>Izdelki</h1>
-                <p>To je začasni vsebinski blok. Produktni del lahko dodaš v naslednjem koraku.</p>
-            </section>
-        ');
+        $products = loadProductsFromJson(__DIR__ . '/../data/products.json');
+        return renderLayout('Izdelki', 'products', renderProductsContent($products));
     },
 ]));
 
 $routes->add('products_sl', new Route('/izdelki', [
     '_controller' => static function () {
-        return renderLayout('Izdelki', 'products', '
-            <section class="placeholder-card">
-                <h1>Izdelki</h1>
-                <p>To je začasni vsebinski blok. Produktni del lahko dodaš v naslednjem koraku.</p>
-            </section>
-        ');
+        $products = loadProductsFromJson(__DIR__ . '/../data/products.json');
+        return renderLayout('Izdelki', 'products', renderProductsContent($products));
     },
 ]));
 
