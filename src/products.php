@@ -74,7 +74,11 @@ function renderProductsContent(array $products): string
                 <div class="product-body">
                     <h2 class="product-name">' . $name . '</h2>
                     <h3 class="product-subtitle">' . $subtitle . '</h3>
-                    ' . $descHtml . '
+                    <div class="product-desc-full">' . $descHtml . '</div>
+                    <details class="product-desc-accordion">
+                        <summary class="product-desc-summary">Opis izdelka</summary>
+                        ' . $descHtml . '
+                    </details>
                     <a class="product-more-btn" href="' . $detailHref . '">+ VEČ O IZDELKU ' . $serialNumber . '</a>
                 </div>
             </article>

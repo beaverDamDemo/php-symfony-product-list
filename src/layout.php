@@ -279,6 +279,52 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             color: #ffffff;
         }
 
+        .product-desc-accordion {
+            display: none;
+            margin: 0 0 12px;
+        }
+
+        .product-desc-summary {
+            cursor: pointer;
+            font-weight: 700;
+            color: #455a70;
+            font-size: 15px;
+            padding: 6px 0;
+            user-select: none;
+            list-style: none;
+        }
+
+        .product-desc-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .product-desc-summary::before {
+            content: '';
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 8px solid #455a70;
+            margin-right: 6px;
+            vertical-align: middle;
+            transition: transform 0.2s ease;
+        }
+
+        details[open] .product-desc-summary::before {
+            transform: rotate(90deg);
+        }
+
+        @media (max-width: 480px) {
+            .product-desc-full {
+                display: none;
+            }
+
+            .product-desc-accordion {
+                display: block;
+            }
+        }
+
         /* ── Product detail page ── */
         .detail-wrap {
             display: flex;
