@@ -1,0 +1,19 @@
+{
+    "name": "fjasdojf/php-symfony-product-list",
+    "autoload": {
+        "psr-4": {
+            "Fjasdojf\\PhpSymfonyProductList\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "beaverDamDemo",
+            "email": "zdenevi@gmail.com"
+        }
+    ],
+    "require": {
+        "symfony/routing": "^7.4",
+        "symfony/http-foundation": "^7.4",
+        "twig/twig": "^3.24"
+    }
+}
