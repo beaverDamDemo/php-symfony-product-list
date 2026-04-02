@@ -7,14 +7,22 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+function getBasePath(): string
+{
+    $scriptName = $_SERVER['SCRIPT_NAME'] ?? '/public/index.php';
+    return rtrim(str_replace('/public/index.php', '', $scriptName), '/');
+}
+
 function renderLayout(string $title, string $activeKey, string $contentHtml): Response
 {
+    $base = getBasePath();
+
     $navLinks = [
-        ['label' => 'Domov', 'href' => '/', 'key' => 'home'],
-        ['label' => 'O nas', 'href' => '/o-nas', 'key' => 'about'],
-        ['label' => 'Kontakt', 'href' => '/kontakt', 'key' => 'contact'],
-        ['label' => 'Pišite nam', 'href' => '/pisite-nam', 'key' => 'write'],
-        ['label' => 'IZDELKI', 'href' => '/izdelki', 'key' => 'products'],
+        ['label' => 'Domov',      'href' => $base . '/public',    'key' => 'home'],
+        ['label' => 'O nas',      'href' => $base . '/o-nas',     'key' => 'about'],
+        ['label' => 'Kontakt',    'href' => $base . '/kontakt',   'key' => 'contact'],
+        ['label' => 'Pišite nam', 'href' => $base . '/pisite-nam', 'key' => 'write'],
+        ['label' => 'IZDELKI',    'href' => $base . '/izdelki',   'key' => 'products'],
     ];
 
     $menuHtml = '';
@@ -70,6 +78,10 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             min-height: 100vh;
             display: grid;
             grid-template-rows: auto auto 1fr;
+            max-width: 1280px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
         }
 
         .row-inner {
@@ -86,9 +98,19 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
         }
 
         .logo {
-            width: min(220px, 48vw);
-            height: auto;
+            width: 128px;
+            height: 128px;
             display: block;
+            object-fit: contain;
+        }
+
+        .logo-kabi {
+            height: 112px;
+            width: auto;
+            display: block;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            object-fit: contain;
         }
 
         .header-row {
@@ -161,8 +183,8 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
 <body>
     <div class="site-shell">
         <div class="logo-row row-inner">
-            <img class="logo" src="/logo.png" alt="Logo">
-            <img class="logo" src="/kabi-test.png" alt="Kabi-Test">
+            <img class="logo" src="./logo.png" alt="Logo">
+            <img class="logo-kabi" src="./kabi-test.png" alt="Kabi-Test">
         </div>
 
         <header class="header-row">
@@ -196,38 +218,7 @@ $routes->add('home', new Route('/', [
     },
 ]));
 
-$routes->add('about', new Route('/o-nas', [
-    '_controller' => static function () {
-        return renderLayout('O nas', 'about', '
-            <section class="placeholder-card">
-                <h1>O nas</h1>
-                <p>To je pripravljena podstran z enakim layoutom. Vsebino lahko dodaš kasneje.</p>
-            </section>
-        ');
-    },
-]));
 
-$routes->add('contact', new Route('/kontakt', [
-    '_controller' => static function () {
-        return renderLayout('Kontakt', 'contact', '
-            <section class="placeholder-card">
-                <h1>Kontakt</h1>
-                <p>Tudi ta podstran uporablja isti globalni layout za celotno spletno stran.</p>
-            </section>
-        ');
-    },
-]));
-
-$routes->add('write', new Route('/pisite-nam', [
-    '_controller' => static function () {
-        return renderLayout('Pišite nam', 'write', '
-            <section class="placeholder-card">
-                <h1>Pišite nam</h1>
-                <p>Prostor za bodoč obrazec ali kontaktne informacije.</p>
-            </section>
-        ');
-    },
-]));
 
 $routes->add('products', new Route('/products', [
     '_controller' => static function () {
@@ -263,7 +254,37 @@ try {
     $controller = $parameters['_controller'];
     $response = \call_user_func($controller);
 } catch (\Throwable $e) {
-    $response = new Response('Not Found', 404);
+    $response = renderLayout('404 – Stran ni najdena', '', '
+        <section style="text-align:center; padding: 48px 0;">
+            <div style="font-size: clamp(80px, 16vw, 160px); font-weight: 900; line-height: 1;
+                        background: linear-gradient(110deg, #1565c0, #2e7d32);
+                        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                        background-clip: text;">
+                404
+            </div>
+            <h1 style="margin: 16px 0 8px; font-size: clamp(20px, 4vw, 32px); color: #11253a;">
+                Stran ni bila najdena
+            </h1>
+            <p style="color: #556; margin: 0 0 28px; font-size: 16px;">
+                Naslov, ki ste ga vnesli, ne obstaja ali je bil premaknjen.
+            </p>
+            <a href="' . getBasePath() . '/public" style="
+                display: inline-block;
+                background: linear-gradient(110deg, #1565c0, #2e7d32);
+                color: #fff;
+                font-weight: 700;
+                text-decoration: none;
+                padding: 12px 28px;
+                border-radius: 8px;
+                font-size: 15px;
+                letter-spacing: 0.03em;
+                transition: opacity 0.2s;
+            " onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">
+                ← Nazaj na domačo stran
+            </a>
+        </section>
+    ');
+    $response->setStatusCode(404);
 }
 
 $response->send();

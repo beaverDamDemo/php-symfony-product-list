@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Serve real files/directories in public/ directly
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Forward everything else through public/index.php
+RewriteRule ^(.*)$ public/index.php [QSA,L]
