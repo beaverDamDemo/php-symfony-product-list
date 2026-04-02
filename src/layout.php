@@ -78,6 +78,7 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             min-height: 100vh;
             display: grid;
             grid-template-rows: auto auto 1fr;
+            width: calc(100% - 24px);
             max-width: 1280px;
             margin-left: auto;
             margin-right: auto;
@@ -415,11 +416,6 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
         }
 
         @media (max-width: 560px) {
-            .logo-row {
-                padding-left: 12px;
-                padding-right: 12px;
-            }
-
             .header-nav {
                 gap: 6px;
                 align-items: stretch;
