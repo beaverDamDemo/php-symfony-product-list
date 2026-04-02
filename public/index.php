@@ -17,9 +17,7 @@ $routes->add('home', new Route('/', [
 ]));
 
 $routes->add('products', new Route('/products', [
-    '_controller' => function () {
-        return new Response('Products page works!');
-    }
+    '_controller' => [new \App\ProductController(), 'list']
 ]));
 
 // Handle request
