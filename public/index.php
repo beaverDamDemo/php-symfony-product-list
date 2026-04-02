@@ -232,23 +232,17 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
                     <li>osnovno poznavanje Javascript (jQuery, vanilla javascript)</li>
                     <li>poznavanje logike CMS sistemov</li>
                     <li>poznavanje programskega jezika PHP</li>
-                    <li>osnove poznavanja objektnega programiranja</li>
-                    <li>znanje angleškega jezika (pisno in pogovorno)</li>
-                    <li>zanesljivost, doslednost in odgovornost</li>
-                    <li>želja po iskanju novih rešitev in izboljšav</li>
-                    <li>željo po učenju novih stvari</li>
                 </ul>
-
+</div>
+<div class="temporary" style="background: navy; color: gold; padding: 18px; border-radius: 8px; max-width: 760px; margin: 32px auto;">
                 <h2>Zaželena znanja (ki niso pogoj)</h2>
                 <ul>
                     <li>poznavanje modernih smernic spletnega razvoja in odzivnega (responsive) dizajna</li>
                     <li>poznavanje modernih tehnologij za frontend (CSS, SCSS, HTML, responsive design, Bootstrap, jQuery, React, Angular, VueJs) je prednost</li>
-                    <li>poznavanje PHP frameworkov (npr. Symfony, Laravel, Zend) je prednost</li>
-                    <li>uporaba version control sistemov, predvsem Git-a je prednost</li>
-                    <li>poznavanje drugih programskih jezikov</li>
                     <li>poznavanje SEO smernic je prednost</li>
                 </ul>
-
+</div>
+<div class="temporary" style="background: gold; color: navy; padding: 18px; border-radius: 8px; max-width: 760px; margin: 32px auto;">
                 <h2>Zahteve naloge</h2>
                 <ul>
                     <li>V PHP-u (+CSS/SCSS, JS) narediti stran in podstran na podlagi dizajna</li>
@@ -257,7 +251,6 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
                     <li>Uporabijo se lahko različni frameworki in knjižnice (PHP, CSS in JS)</li>
                     <li>Lahko se uporabi tudi kakšen template sistem</li>
                     <li>Stran naj bo responsive, prilagojen prikaz na mobitelih &lt;500px (na tablicah ni treba)</li>
-                    <li>Stran mora delovati na Apache 2.4 (dovoljena uporaba .htaccess datotek) s PHP 8</li>
                 </ul>
             </div>
 </body>
