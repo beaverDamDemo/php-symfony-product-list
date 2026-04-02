@@ -39,11 +39,11 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="apple-touch-icon" sizes="180x180" href="./favicon_io/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="./favicon_io/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./favicon_io/favicon-16x16.png">
-    <link rel="icon" type="image/x-icon" href="./favicon_io/favicon.ico">
-    <link rel="manifest" href="./favicon_io/site.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="{$base}/public/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="{$base}/public/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{$base}/public/favicon_io/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="{$base}/public/favicon_io/favicon.ico">
+    <link rel="manifest" href="{$base}/public/favicon_io/site.webmanifest">
     <title>{$safeTitle}</title>
     <style>
         :root {
@@ -376,8 +376,12 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
 <body>
     <div class="site-shell">
         <div class="logo-row row-inner">
-            <img class="logo" src="./logo.png" alt="Logo">
-            <img class="logo-kabi" src="./kabi-test.png" alt="Kabi-Test">
+            <a href="{$base}/public" style="cursor:pointer;display:contents;">
+                <img class="logo" src="{$base}/public/logo.png" alt="Logo">
+            </a>
+            <a href="{$base}/public" style="cursor:pointer;display:contents;">
+                <img class="logo-kabi" src="{$base}/public/kabi-test.png" alt="Kabi-Test">
+            </a>
         </div>
 
         <header class="header-row">
