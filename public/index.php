@@ -18,7 +18,7 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
     $base = getBasePath();
 
     $navLinks = [
-        ['label' => 'Domov',      'href' => $base . '/public',           'key' => 'home'],
+        ['label' => '<span style="font-size:1.4em;line-height:1;position:relative;top:1px;">⌂</span> Domov',    'href' => $base . '/public',           'key' => 'home'],
         ['label' => 'O nas',      'href' => $base . '/public/o-nas',     'key' => 'about'],
         ['label' => 'Kontakt',    'href' => $base . '/public/kontakt',   'key' => 'contact'],
         ['label' => 'Pišite nam', 'href' => $base . '/public/pisite-nam', 'key' => 'write'],
@@ -32,7 +32,7 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             '<a class="nav-link%s" href="%s">%s</a>',
             $isActive,
             htmlspecialchars($link['href'], ENT_QUOTES, 'UTF-8'),
-            htmlspecialchars($link['label'], ENT_QUOTES, 'UTF-8')
+            $link['label']
         );
     }
 
@@ -95,26 +95,29 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
         }
 
         .logo-row {
-            padding-top: 12px;
-            padding-bottom: 12px;
+            padding-top: 24px;
+            padding-bottom: 24px;
+            padding-left: 0;
+            padding-right: 0;
             display: flex;
             justify-content: flex-start;
             align-items: center;
+            gap: 12px;
         }
 
         .logo {
-            width: 128px;
-            height: 128px;
+            width: 77px;
+            height: 77px;
             display: block;
             object-fit: contain;
         }
 
         .logo-kabi {
-            height: 112px;
+            height: 67px;
             width: auto;
             display: block;
-            padding-top: 8px;
-            padding-bottom: 8px;
+            padding-top: 5px;
+            padding-bottom: 5px;
             object-fit: contain;
         }
 
@@ -281,6 +284,87 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             color: #ffffff;
         }
 
+        /* ── Product detail page ── */
+        .detail-wrap {
+            display: flex;
+            flex-direction: row;
+            gap: 32px;
+            align-items: flex-start;
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .detail-image {
+            flex: 0 0 40%;
+            max-width: 40%;
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .detail-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-name {
+            margin: 0 0 8px;
+            font-size: clamp(22px, 4vw, 32px);
+            color: #11253a;
+        }
+
+        .detail-subtitle {
+            margin: 0 0 18px;
+            font-size: 17px;
+            font-weight: 700;
+            color: #455a70;
+        }
+
+        .detail-description {
+            margin: 0 0 14px;
+            color: #455a70;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        .detail-back-btn {
+            display: inline-flex;
+            align-items: center;
+            align-self: flex-start;
+            gap: 6px;
+            margin-top: 28px;
+            background: transparent;
+            border: 1px solid #5ea1e1;
+            color: #5ea1e1;
+            border-radius: 8px;
+            padding: 11px 20px;
+            font-weight: 700;
+            text-decoration: none;
+            line-height: 1;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .detail-back-btn:hover {
+            background-color: #5ea1e1;
+            color: #ffffff;
+        }
+
+        @media (max-width: 700px) {
+            .detail-wrap {
+                flex-direction: column;
+            }
+
+            .detail-image {
+                flex: none;
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+
         @media (max-width: 560px) {
             .header-nav {
                 gap: 6px;
@@ -382,6 +466,7 @@ function loadProductsFromJson(string $jsonPath): array
             'name'        => (string) ($item['name'] ?? 'Izdelek'),
             'subtitle'    => (string) ($item['subtitle'] ?? ''),
             'description' => $paragraphs,
+            'image'       => (string) ($item['image'] ?? ''),
         ];
     }
 
@@ -403,13 +488,18 @@ function renderProductsContent(array $products): string
     $basePath = getBasePath();
     foreach ($products as $index => $product) {
         $serialNumber = $index + 1;
-        $imageSrc = htmlspecialchars($basePath . '/public/izdelek-' . $serialNumber . '.jpg', ENT_QUOTES, 'UTF-8');
+        $rawImage = $product['image'] !== ''
+            ? $product['image']
+            : $basePath . '/public/izdelek-' . $serialNumber . '.png';
+        $imageSrc = htmlspecialchars($rawImage, ENT_QUOTES, 'UTF-8');
         $name        = htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8');
         $subtitle    = htmlspecialchars($product['subtitle'], ENT_QUOTES, 'UTF-8');
         $descHtml    = '';
         foreach ($product['description'] as $para) {
             $descHtml .= '<p class="product-description">' . htmlspecialchars($para, ENT_QUOTES, 'UTF-8') . '</p>';
         }
+
+        $detailHref = htmlspecialchars($basePath . '/public/izdelek/' . $serialNumber, ENT_QUOTES, 'UTF-8');
 
         $cards .= '
             <article class="product-card">
@@ -418,7 +508,7 @@ function renderProductsContent(array $products): string
                     <h2 class="product-name">' . $name . '</h2>
                     <h3 class="product-subtitle">' . $subtitle . '</h3>
                     ' . $descHtml . '
-                    <button class="product-more-btn" type="button">+ VEČ O IZDELKU ' . $serialNumber . '</button>
+                    <a class="product-more-btn" href="' . $detailHref . '">+ VEČ O IZDELKU ' . $serialNumber . '</a>
                 </div>
             </article>
         ';
@@ -428,6 +518,36 @@ function renderProductsContent(array $products): string
         <section class="products-wrap">
             <div class="products-grid">' . $cards . '</div>
         </section>
+    ';
+}
+
+function renderProductDetailContent(array $product, int $serialNumber): string
+{
+    $basePath = getBasePath();
+    $rawImage = $product['image'] !== ''
+        ? $product['image']
+        : $basePath . '/public/izdelek-' . $serialNumber . '.png';
+
+    $imageSrc  = htmlspecialchars($rawImage, ENT_QUOTES, 'UTF-8');
+    $name      = htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8');
+    $subtitle  = htmlspecialchars($product['subtitle'], ENT_QUOTES, 'UTF-8');
+    $backHref  = htmlspecialchars($basePath . '/public/izdelki', ENT_QUOTES, 'UTF-8');
+
+    $descHtml = '';
+    foreach ($product['description'] as $para) {
+        $descHtml .= '<p class="detail-description">' . htmlspecialchars($para, ENT_QUOTES, 'UTF-8') . '</p>';
+    }
+
+    return '
+        <div class="detail-wrap">
+            <img class="detail-image" src="' . $imageSrc . '" alt="' . $name . '">
+            <div class="detail-body">
+                <h1 class="detail-name">' . $name . '</h1>
+                <h2 class="detail-subtitle">' . $subtitle . '</h2>
+                ' . $descHtml . '
+                <a class="detail-back-btn" href="' . $backHref . '">&#8592; NAZAJ NA SEZNAM</a>
+            </div>
+        </div>
     ';
 }
 
@@ -462,6 +582,31 @@ $routes->add('products_sl', new Route('/izdelki', [
     },
 ]));
 
+$detailRoute = new Route('/izdelek/{id}', [
+    '_controller' => static function (string $id) {
+        $id = (int) $id;
+        $products = loadProductsFromJson(__DIR__ . '/../data/products.json');
+        $index = $id - 1;
+        if ($index < 0 || $index >= count($products)) {
+            return renderLayout('404 – Izdelek ni najden', 'products', '
+                <section style="text-align:center; padding: 48px 0;">
+                    <h1>Izdelek ni bil najden</h1>
+                    <a href="' . htmlspecialchars(getBasePath() . '/public/izdelki', ENT_QUOTES, 'UTF-8') . '" style="color:#5ea1e1; font-weight:700;">← Nazaj na seznam</a>
+                </section>
+            ');
+        }
+        $product = $products[$index];
+        return renderLayout(
+            htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8'),
+            'products',
+            renderProductDetailContent($product, $id)
+        );
+    },
+    'id' => 1,
+]);
+$detailRoute->setRequirements(['id' => '\d+']);
+$routes->add('product_detail', $detailRoute);
+
 // Handle request
 $request = Request::createFromGlobals();
 $context = new Symfony\Component\Routing\RequestContext();
@@ -472,7 +617,12 @@ $matcher = new Symfony\Component\Routing\Matcher\UrlMatcher($routes, $context);
 try {
     $parameters = $matcher->match($request->getPathInfo());
     $controller = $parameters['_controller'];
-    $response = \call_user_func($controller);
+    $routeParams = array_filter(
+        $parameters,
+        static fn($key) => $key !== '_controller' && $key !== '_route',
+        ARRAY_FILTER_USE_KEY
+    );
+    $response = \call_user_func($controller, ...(empty($routeParams) ? [] : array_values($routeParams)));
 } catch (\Throwable $e) {
     $response = renderLayout('404 – Stran ni najdena', '', '
         <section style="text-align:center; padding: 48px 0;">
