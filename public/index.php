@@ -22,7 +22,9 @@ $context->fromRequest($request);
 $matcher = new Symfony\Component\Routing\Matcher\UrlMatcher($routes, $context);
 
 try {
-    $parameters  = $matcher->match($request->getPathInfo());
+    // Strip trailing slash Apache adds via directory redirect (e.g. /izdelki/ → /izdelki)
+    $pathInfo = rtrim($request->getPathInfo(), '/') ?: '/';
+    $parameters  = $matcher->match($pathInfo);
     $controller  = $parameters['_controller'];
     $routeParams = array_filter(
         $parameters,

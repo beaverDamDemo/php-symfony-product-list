@@ -1,4 +1,13 @@
+Options -Indexes
+DirectoryIndex index.php
+
 RewriteEngine On
+
+# Explicitly route Symfony paths that share a name with a real directory
+RewriteRule ^(izdelki|products)/?$ index.php [QSA,L]
+RewriteRule ^(izdelek)/.+$ index.php [QSA,L]
+
+# Standard: route all non-file, non-directory requests through PHP
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
