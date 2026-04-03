@@ -52,6 +52,11 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             --grid-line: #d5e0ea;
             --header-start: #47c5ef;
             --header-end: #6f87d7;
+            --text-strong: #11253a;
+            --text-muted: #455a70;
+            --accent: #5ea1e1;
+            --card-bg: rgba(255, 255, 255, 0.88);
+            --card-border: rgba(17, 37, 58, 0.14);
         }
 
         * {
@@ -66,7 +71,7 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
 
         body {
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            color: #11253a;
+            color: var(--text-strong);
             background-color: var(--grid-bg);
             background-image:
                 linear-gradient(var(--grid-line) 1px, transparent 1px),
@@ -213,8 +218,8 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
         }
 
         .product-card {
-            background: rgba(255, 255, 255, 0.88);
-            border: 1px solid rgba(17, 37, 58, 0.14);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 10px;
             overflow: hidden;
             padding: 0;
@@ -244,14 +249,14 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
         .product-subtitle {
             margin: 0 0 18px;
             font-weight: 700;
-            color: #455a70;
+            color: var(--text-muted);
             font-size: 17px;
             letter-spacing: 0.01em;
         }
 
         .product-description {
             margin: 0 0 12px;
-            color: #455a70;
+            color: var(--text-muted);
             line-height: 1.5;
         }
 
@@ -263,8 +268,8 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             width: auto;
             max-width: 100%;
             background: transparent;
-            border: 1px solid #5ea1e1;
-            color: #5ea1e1;
+            border: 1px solid var(--accent);
+            color: var(--accent);
             border-radius: 8px;
             padding: 14px 20px;
             font-weight: 700;
@@ -276,7 +281,7 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
         }
 
         .product-more-btn:hover {
-            background-color: #5ea1e1;
+            background-color: var(--accent);
             color: #ffffff;
         }
 
@@ -288,7 +293,7 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
         .product-desc-summary {
             cursor: pointer;
             font-weight: 700;
-            color: #455a70;
+            color: var(--text-muted);
             font-size: 15px;
             padding: 6px 0;
             user-select: none;
@@ -306,7 +311,7 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             height: 0;
             border-top: 5px solid transparent;
             border-bottom: 5px solid transparent;
-            border-left: 8px solid #455a70;
+            border-left: 8px solid var(--text-muted);
             margin-right: 6px;
             vertical-align: middle;
             transition: transform 0.2s ease;
@@ -342,8 +347,8 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             align-items: flex-start;
             max-width: 980px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.88);
-            border: 1px solid rgba(17, 37, 58, 0.14);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 10px;
             padding: 32px;
         }
@@ -367,19 +372,19 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
         .detail-name {
             margin: 0 0 8px;
             font-size: clamp(22px, 4vw, 32px);
-            color: #11253a;
+            color: var(--text-strong);
         }
 
         .detail-subtitle {
             margin: 0 0 18px;
             font-size: 17px;
             font-weight: 700;
-            color: #455a70;
+            color: var(--text-muted);
         }
 
         .detail-description {
             margin: 0 0 14px;
-            color: #455a70;
+            color: var(--text-muted);
             line-height: 1.6;
             flex: 1;
         }
@@ -391,8 +396,8 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             gap: 6px;
             margin-top: 28px;
             background: transparent;
-            border: 1px solid #5ea1e1;
-            color: #5ea1e1;
+            border: 1px solid var(--accent);
+            color: var(--accent);
             border-radius: 8px;
             padding: 11px 20px;
             font-weight: 700;
@@ -403,7 +408,7 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
         }
 
         .detail-back-btn:hover {
-            background-color: #5ea1e1;
+            background-color: var(--accent);
             color: #ffffff;
         }
 
