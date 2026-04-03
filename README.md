@@ -70,7 +70,27 @@ App URL:
 
 - http://localhost:8080/public
 
-MySQL connection (from your host machine):
+### Adminer (database UI)
+
+Adminer is a lightweight web UI for browsing and editing the MySQL database.
+
+URL: http://localhost:8081
+
+Login credentials:
+
+| Field    | Value          |
+| -------- | -------------- |
+| System   | MySQL          |
+| Server   | `mysql`        |
+| Username | `app`          |
+| Password | `app`          |
+| Database | `product_list` |
+
+After logging in, click **products** in the left sidebar to view all rows, or use the **SQL command** tab to run raw queries.
+
+### MySQL connection (from your host machine)
+
+For external tools (e.g. TablePlus, DBeaver, MySQL Workbench):
 
 - Host: `127.0.0.1`
 - Port: `3307`
