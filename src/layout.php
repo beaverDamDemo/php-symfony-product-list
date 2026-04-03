@@ -342,6 +342,10 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             align-items: flex-start;
             max-width: 980px;
             margin: 0 auto;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(17, 37, 58, 0.14);
+            border-radius: 10px;
+            padding: 32px;
         }
 
         .detail-image {
