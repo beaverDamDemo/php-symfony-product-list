@@ -2,6 +2,42 @@
 
 use Symfony\Component\HttpFoundation\Response;
 
+require_once __DIR__ . '/database.php';
+require_once __DIR__ . '/ProductRepository.php';
+
+function normalizeProductDescription(mixed $rawDescription): array
+{
+    if (is_array($rawDescription)) {
+        return array_values(array_filter($rawDescription, 'is_string'));
+    }
+
+    return [(string) $rawDescription];
+}
+
+function loadProductsFromDatabase(): array
+{
+    if (!hasDatabaseConfig()) {
+        return [];
+    }
+
+    $repository = new ProductRepository(getDatabaseConnection());
+    return $repository->findAll();
+}
+
+function loadProducts(): array
+{
+    try {
+        $dbProducts = loadProductsFromDatabase();
+        if ($dbProducts !== []) {
+            return $dbProducts;
+        }
+    } catch (Throwable) {
+        // Database can be unavailable during local dev; use JSON fallback.
+    }
+
+    return loadProductsFromJson(__DIR__ . '/../data/products.json');
+}
+
 function loadProductsFromJson(string $jsonPath): array
 {
     if (!is_file($jsonPath) || !is_readable($jsonPath)) {
@@ -19,17 +55,15 @@ function loadProductsFromJson(string $jsonPath): array
     }
 
     $products = [];
-    foreach ($decoded as $item) {
+    foreach ($decoded as $index => $item) {
         if (!is_array($item)) {
             continue;
         }
 
-        $rawDesc = $item['description'] ?? '';
-        $paragraphs = is_array($rawDesc)
-            ? array_values(array_filter($rawDesc, 'is_string'))
-            : [(string) $rawDesc];
+        $paragraphs = normalizeProductDescription($item['description'] ?? '');
 
         $products[] = [
+            'id'          => (int) ($item['id'] ?? ($index + 1)),
             'name'        => (string) ($item['name'] ?? 'Izdelek'),
             'subtitle'    => (string) ($item['subtitle'] ?? ''),
             'description' => $paragraphs,
@@ -54,10 +88,10 @@ function renderProductsContent(array $products): string
     $cards = '';
     $basePath = getBasePath();
     foreach ($products as $index => $product) {
-        $serialNumber = $index + 1;
+        $productId = (int) ($product['id'] ?? ($index + 1));
         $rawImage = $product['image'] !== ''
-            ? $product['image']
-            : $basePath . '/public/izdelek-' . $serialNumber . '.png';
+            ? $basePath . $product['image']
+            : $basePath . '/public/izdelek-' . $productId . '.png';
         $imageSrc = htmlspecialchars($rawImage, ENT_QUOTES, 'UTF-8');
         $name     = htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8');
         $subtitle = htmlspecialchars($product['subtitle'], ENT_QUOTES, 'UTF-8');
@@ -66,11 +100,11 @@ function renderProductsContent(array $products): string
             $descHtml .= '<p class="product-description">' . htmlspecialchars($para, ENT_QUOTES, 'UTF-8') . '</p>';
         }
 
-        $detailHref = htmlspecialchars($basePath . '/public/izdelek/' . $serialNumber, ENT_QUOTES, 'UTF-8');
+        $detailHref = htmlspecialchars($basePath . '/public/izdelek/' . $productId, ENT_QUOTES, 'UTF-8');
 
         $cards .= '
             <article class="product-card">
-                <img class="product-image" src="' . $imageSrc . '" alt="Izdelek ' . $serialNumber . '">
+                <img class="product-image" src="' . $imageSrc . '" alt="Izdelek ' . $productId . '">
                 <div class="product-body">
                     <h2 class="product-name">' . $name . '</h2>
                     <h3 class="product-subtitle">' . $subtitle . '</h3>
@@ -79,7 +113,7 @@ function renderProductsContent(array $products): string
                         <summary class="product-desc-summary">Opis izdelka</summary>
                         ' . $descHtml . '
                     </details>
-                    <a class="product-more-btn" href="' . $detailHref . '">+ VEČ O IZDELKU ' . $serialNumber . '</a>
+                    <a class="product-more-btn" href="' . $detailHref . '">+ VEČ O IZDELKU ' . $productId . '</a>
                 </div>
             </article>
         ';
@@ -96,7 +130,7 @@ function renderProductDetailContent(array $product, int $serialNumber): string
 {
     $basePath = getBasePath();
     $rawImage = $product['image'] !== ''
-        ? $product['image']
+        ? $basePath . $product['image']
         : $basePath . '/public/izdelek-' . $serialNumber . '.png';
 
     $imageSrc = htmlspecialchars($rawImage, ENT_QUOTES, 'UTF-8');
@@ -124,17 +158,23 @@ function renderProductDetailContent(array $product, int $serialNumber): string
 
 function renderProductsPage(): Response
 {
-    $products = loadProductsFromJson(__DIR__ . '/../data/products.json');
+    $products = loadProducts();
     return renderLayout('Izdelki', 'products', renderProductsContent($products));
 }
 
 function renderProductDetailPage(string $id): Response
 {
     $id       = (int) $id;
-    $products = loadProductsFromJson(__DIR__ . '/../data/products.json');
-    $index    = $id - 1;
+    $products = loadProducts();
+    $product = null;
+    foreach ($products as $candidate) {
+        if ((int) ($candidate['id'] ?? 0) === $id) {
+            $product = $candidate;
+            break;
+        }
+    }
 
-    if ($index < 0 || $index >= count($products)) {
+    if (!is_array($product)) {
         return renderLayout('404 – Izdelek ni najden', 'products', '
             <section style="text-align:center; padding: 48px 0;">
                 <h1>Izdelek ni bil najden</h1>
@@ -144,7 +184,6 @@ function renderProductDetailPage(string $id): Response
         ');
     }
 
-    $product = $products[$index];
     return renderLayout(
         htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8'),
         'products',

@@ -8,7 +8,7 @@ The app includes:
 - product list page with mobile accordion behavior
 - product detail page
 - custom 404 page
-- JSON-backed product data
+- MySQL-backed product data (with JSON fallback for local/dev)
 
 ## Stack
 
@@ -16,6 +16,8 @@ The app includes:
 - symfony/routing
 - symfony/http-foundation
 - Apache + .htaccess rewriting
+- MySQL 8
+- Docker + Docker Compose
 
 ## Project Structure
 
@@ -23,9 +25,15 @@ The app includes:
 - src/layout.php: shared HTML shell and global CSS
 - src/home.php: home page content
 - src/products.php: product list/detail rendering and data loading
+- src/database.php: PDO database connection from environment variables
+- src/ProductRepository.php: product queries and row mapping
 - src/not_found.php: 404 page rendering
 - src/routes.php: centralized route definitions
 - data/products.json: product data source
+- docker-compose.yml: app + mysql services
+- docker/mysql/init/
+  - 001_schema.sql: MySQL schema
+  - 002_seed_products.sql: initial product seed data
 - tests/run.php: lightweight test runner (no external test framework required)
 - tests/\*.php: PHPUnit test files prepared for full PHPUnit usage
 
@@ -43,6 +51,50 @@ This project is currently used under:
 - C:/xampp/htdocs/php-symfony-product-list
 
 Routing is handled through root and public .htaccess files.
+
+## Docker + MySQL Run
+
+### Prerequisites
+
+- Docker Desktop (or Docker Engine + Compose)
+
+### Start everything
+
+From the project root:
+
+```powershell
+docker compose up --build
+```
+
+App URL:
+
+- http://localhost:8080/public
+
+MySQL connection (from your host machine):
+
+- Host: `127.0.0.1`
+- Port: `3307`
+- Database: `product_list`
+- User: `app`
+- Password: `app`
+
+### Stop containers
+
+```powershell
+docker compose down
+```
+
+To also remove DB volume data:
+
+```powershell
+docker compose down -v
+```
+
+### Database behavior
+
+- On first startup, MySQL runs `docker/mysql/init/001_schema.sql` and `docker/mysql/init/002_seed_products.sql`.
+- The app tries MySQL first when `DB_HOST`, `DB_NAME`, and `DB_USER` are set.
+- If DB is unavailable, the app falls back to `data/products.json`.
 
 ## Tests
 
@@ -116,3 +168,4 @@ php vendor/bin/phpunit -c phpunit.xml
 
 - Product images are expected in public/izdelki/ as izdelek-1.jpg through izdelek-5.jpg.
 - Shared header, logos, and navigation are rendered once in src/layout.php and reused across all pages.
+- Docker app container uses environment-based DB config (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`).

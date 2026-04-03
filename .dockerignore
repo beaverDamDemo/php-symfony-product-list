@@ -1,0 +1,6 @@
+.git
+.gitignore
+.phpunit.cache
+vendor
+node_modules
+tests
