@@ -20,6 +20,16 @@ function loadProducts(): array
     return loadProductsFromDatabase();
 }
 
+function loadProductByIdFromDatabase(int $id): ?array
+{
+    if (!hasDatabaseConfig()) {
+        return null;
+    }
+
+    $repository = new ProductRepository(getDatabaseConnection());
+    return $repository->findById($id);
+}
+
 function renderProductsContent(array $products): string
 {
     if ($products === []) {
@@ -110,15 +120,8 @@ function renderProductsPage(): Response
 
 function renderProductDetailPage(string $id): Response
 {
-    $id       = (int) $id;
-    $products = loadProducts();
-    $product = null;
-    foreach ($products as $candidate) {
-        if ((int) ($candidate['id'] ?? 0) === $id) {
-            $product = $candidate;
-            break;
-        }
-    }
+    $id = (int) $id;
+    $product = loadProductByIdFromDatabase($id);
 
     if (!is_array($product)) {
         return renderLayout('404 – Izdelek ni najden', 'products', '

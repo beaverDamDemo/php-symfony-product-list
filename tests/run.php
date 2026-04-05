@@ -112,6 +112,39 @@ $runTest('invalid product detail shows not found message and back link', static 
     $assert(str_contains($invalidDetailHtml, 'Nazaj na seznam'), 'Invalid product detail should include back-to-list link');
 });
 
+$runTest('repository findById returns only the requested product', static function () use ($assert): void {
+    $pdo = new PDO('sqlite::memory:');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->exec('CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, subtitle TEXT, description TEXT, image TEXT)');
+
+    $insert = $pdo->prepare('INSERT INTO products (id, name, subtitle, description, image) VALUES (:id, :name, :subtitle, :description, :image)');
+    $insert->execute([
+        'id' => 1,
+        'name' => 'Izdelek 1',
+        'subtitle' => 'S1',
+        'description' => json_encode(['Opis 1A', 'Opis 1B'], JSON_THROW_ON_ERROR),
+        'image' => '/public/izdelki/izdelek-1.jpg',
+    ]);
+    $insert->execute([
+        'id' => 2,
+        'name' => 'Izdelek 2',
+        'subtitle' => 'S2',
+        'description' => json_encode(['Opis 2A'], JSON_THROW_ON_ERROR),
+        'image' => '/public/izdelki/izdelek-2.jpg',
+    ]);
+
+    $repository = new ProductRepository($pdo);
+    $product = $repository->findById(2);
+
+    $assert(is_array($product), 'findById should return a product array when id exists');
+    $assert((int) ($product['id'] ?? 0) === 2, 'findById should return product with requested id');
+    $assert((string) ($product['name'] ?? '') === 'Izdelek 2', 'findById should return the correct product name');
+    $assert(($product['description'] ?? []) === ['Opis 2A'], 'findById should parse description JSON into array');
+
+    $missing = $repository->findById(999);
+    $assert($missing === null, 'findById should return null for missing id');
+});
+
 $runTest('404 page returns status 404 with correct content and button style', static function () use ($assert): void {
     $notFound = renderNotFoundPage();
     $notFoundHtml = (string) $notFound->getContent();
