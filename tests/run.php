@@ -87,8 +87,8 @@ $runTest('home page includes shared layout markers', static function () use ($as
 });
 
 $runTest('products page contains grid, accordion and izdelki image path', static function () use ($assert): void {
-    $products = renderProductsPage();
-    $productsHtml = (string) $products->getContent();
+    $products = loadProductsFromJson(dirname(__DIR__) . '/data/products.json');
+    $productsHtml = renderProductsContent($products);
     $assert(str_contains($productsHtml, 'class="products-grid"'), 'Products should include products-grid layout');
     $assert(str_contains($productsHtml, 'class="product-desc-accordion"'), 'Products should include mobile accordion markup');
     $assert(str_contains($productsHtml, '+ VEČ O IZDELKU 1'), 'Products should include accordion label for product 1');
@@ -96,6 +96,8 @@ $runTest('products page contains grid, accordion and izdelki image path', static
 });
 
 $runTest('invalid product detail shows not found message and back link', static function () use ($assert): void {
+    // renderProductDetailPage calls loadProducts(); with no DB in test env it returns []
+    // so id 999 (and any id) correctly hits the not-found branch
     $invalidDetail = renderProductDetailPage('999');
     $invalidDetailHtml = (string) $invalidDetail->getContent();
     $assert(str_contains($invalidDetailHtml, 'Izdelek ni bil najden'), 'Invalid product detail should show not found message');

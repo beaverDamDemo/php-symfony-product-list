@@ -26,16 +26,7 @@ function loadProductsFromDatabase(): array
 
 function loadProducts(): array
 {
-    try {
-        $dbProducts = loadProductsFromDatabase();
-        if ($dbProducts !== []) {
-            return $dbProducts;
-        }
-    } catch (Throwable) {
-        // Database can be unavailable during local dev; use JSON fallback.
-    }
-
-    return loadProductsFromJson(__DIR__ . '/../data/products.json');
+    return loadProductsFromDatabase();
 }
 
 function loadProductsFromJson(string $jsonPath): array
