@@ -83,7 +83,7 @@ $runTest('home page includes shared layout markers', static function () use ($as
     $homeHtml = (string) $home->getContent();
     $assert(str_contains($homeHtml, 'class="logo-row row-inner"'), 'Home should include shared logo row');
     $assert(str_contains($homeHtml, 'aria-label="Glavna navigacija"'), 'Home should include shared nav');
-    $assert(str_contains($homeHtml, '/public/logo.png'), 'Home should include logo image path');
+    $assert(str_contains($homeHtml, '/public/tinified/logo.png'), 'Home should include logo image path');
 });
 
 $runTest('products page contains grid, accordion and izdelki image path', static function () use ($assert): void {
@@ -166,8 +166,8 @@ $runTest('seed SQL contains 5 products with valid image paths', static function 
 $runTest('required public assets exist', static function () use ($assert): void {
     $root = dirname(__DIR__);
     $assets = [
-        $root . '/public/logo.png',
-        $root . '/public/kabi-test.png',
+        $root . '/public/tinified/logo.png',
+        $root . '/public/tinified/kabi-test.png',
         $root . '/public/izdelki/izdelek-1.jpg',
         $root . '/public/izdelki/izdelek-2.jpg',
         $root . '/public/izdelki/izdelek-3.jpg',

@@ -10,8 +10,8 @@ final class AssetsTest extends ProjectTestCaseBase
     {
         $root = dirname(__DIR__);
         $assets = [
-            $root . '/public/logo.png',
-            $root . '/public/kabi-test.png',
+            $root . '/public/tinified/logo.png',
+            $root . '/public/tinified/kabi-test.png',
             $root . '/public/izdelki/izdelek-1.jpg',
             $root . '/public/izdelki/izdelek-2.jpg',
             $root . '/public/izdelki/izdelek-3.jpg',

@@ -441,8 +441,8 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
     <div class="site-shell">
         <div class="logo-row row-inner">
             <a href="{$base}/public" style="display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none;">
-                <img class="logo" src="{$base}/public/logo.png" alt="Logo">
-                <img class="logo-kabi" src="{$base}/public/kabi-test.png" alt="Kabi-Test">
+                <img class="logo" src="{$base}/public/tinified/logo.png" alt="Logo">
+                <img class="logo-kabi" src="{$base}/public/tinified/kabi-test.png" alt="Kabi-Test">
             </a>
         </div>
 

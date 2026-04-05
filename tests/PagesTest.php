@@ -13,7 +13,7 @@ final class PagesTest extends ProjectTestCaseBase
 
         self::assertStringContainsString('class="logo-row row-inner"', (string) $html);
         self::assertStringContainsString('aria-label="Glavna navigacija"', (string) $html);
-        self::assertStringContainsString('/public/logo.png', (string) $html);
+        self::assertStringContainsString('/public/tinified/logo.png', (string) $html);
     }
 
     public function testProductsPageRendersCardsAndAccordionMarkup(): void
