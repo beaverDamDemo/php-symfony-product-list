@@ -5,15 +5,6 @@ use Symfony\Component\HttpFoundation\Response;
 require_once __DIR__ . '/database.php';
 require_once __DIR__ . '/ProductRepository.php';
 
-function normalizeProductDescription(mixed $rawDescription): array
-{
-    if (is_array($rawDescription)) {
-        return array_values(array_filter($rawDescription, 'is_string'));
-    }
-
-    return [(string) $rawDescription];
-}
-
 function loadProductsFromDatabase(): array
 {
     if (!hasDatabaseConfig()) {
@@ -27,42 +18,6 @@ function loadProductsFromDatabase(): array
 function loadProducts(): array
 {
     return loadProductsFromDatabase();
-}
-
-function loadProductsFromJson(string $jsonPath): array
-{
-    if (!is_file($jsonPath) || !is_readable($jsonPath)) {
-        return [];
-    }
-
-    $json = file_get_contents($jsonPath);
-    if ($json === false) {
-        return [];
-    }
-
-    $decoded = json_decode($json, true);
-    if (!is_array($decoded)) {
-        return [];
-    }
-
-    $products = [];
-    foreach ($decoded as $index => $item) {
-        if (!is_array($item)) {
-            continue;
-        }
-
-        $paragraphs = normalizeProductDescription($item['description'] ?? '');
-
-        $products[] = [
-            'id'          => (int) ($item['id'] ?? ($index + 1)),
-            'name'        => (string) ($item['name'] ?? 'Izdelek'),
-            'subtitle'    => (string) ($item['subtitle'] ?? ''),
-            'description' => $paragraphs,
-            'image'       => (string) ($item['image'] ?? ''),
-        ];
-    }
-
-    return array_slice($products, 0, 5);
 }
 
 function renderProductsContent(array $products): string

@@ -8,7 +8,7 @@ The app includes:
 - product list page with mobile accordion behavior
 - product detail page
 - custom 404 page
-- MySQL-backed product data (with JSON fallback for local/dev)
+- MySQL-backed product data
 
 ## Stack
 
@@ -29,7 +29,6 @@ The app includes:
 - src/ProductRepository.php: product queries and row mapping
 - src/not_found.php: 404 page rendering
 - src/routes.php: centralized route definitions
-- data/products.json: product data source
 - docker-compose.yml: app + mysql services
 - docker/mysql/init/
   - 001_schema.sql: MySQL schema
@@ -113,8 +112,7 @@ docker compose down -v
 ### Database behavior
 
 - On first startup, MySQL runs `docker/mysql/init/001_schema.sql` and `docker/mysql/init/002_seed_products.sql`.
-- The app tries MySQL first when `DB_HOST`, `DB_NAME`, and `DB_USER` are set.
-- If DB is unavailable, the app falls back to `data/products.json`.
+- The app reads products from MySQL using environment variables `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD`.
 
 ## Tests
 
@@ -144,7 +142,7 @@ composer test
 | Products page  | Products grid, accordion markup, accordion labels, and image paths rendered           |
 | Product detail | Invalid product ID shows not-found message and back link                              |
 | 404 page       | Returns HTTP 404 status with correct heading and button style                         |
-| products.json  | Contains exactly 5 products, each with a valid `/public/izdelki/*.jpg` image path     |
+| Seed SQL       | Contains exactly 5 seeded products with valid `/public/izdelki/*.jpg` image paths     |
 | Assets         | All required image files exist on disk in `public/` and `public/izdelki/`             |
 
 ### Example output
@@ -161,7 +159,7 @@ Running custom test checks...
 ● PASS  products page contains grid, accordion and izdelki image path
 ● PASS  invalid product detail shows not found message and back link
 ● PASS  404 page returns status 404 with correct content and button style
-● PASS  products.json has 5 entries with valid izdelki image paths
+● PASS  seed SQL contains 5 products with valid image paths
 ● PASS  required public assets exist
 
 Summary: 11/11 passed, 0 failed.

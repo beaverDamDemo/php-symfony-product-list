@@ -87,7 +87,15 @@ $runTest('home page includes shared layout markers', static function () use ($as
 });
 
 $runTest('products page contains grid, accordion and izdelki image path', static function () use ($assert): void {
-    $products = loadProductsFromJson(dirname(__DIR__) . '/data/products.json');
+    $products = [
+        [
+            'id' => 1,
+            'name' => 'Test Izdelek 1',
+            'subtitle' => 'Test Subtitle',
+            'description' => ['Opis 1'],
+            'image' => '/public/izdelki/izdelek-1.jpg',
+        ],
+    ];
     $productsHtml = renderProductsContent($products);
     $assert(str_contains($productsHtml, 'class="products-grid"'), 'Products should include products-grid layout');
     $assert(str_contains($productsHtml, 'class="product-desc-accordion"'), 'Products should include mobile accordion markup');
@@ -112,15 +120,14 @@ $runTest('404 page returns status 404 with correct content and button style', st
     $assert(str_contains($notFoundHtml, 'class="detail-back-btn"'), '404 page should use shared button style');
 });
 
-$runTest('products.json has 5 entries with valid izdelki image paths', static function () use ($assert): void {
-    $jsonPath = dirname(__DIR__) . '/data/products.json';
-    $data = json_decode((string) file_get_contents($jsonPath), true);
-    $assert(is_array($data), 'products.json should decode to an array');
-    $assert(count($data) === 5, 'products.json should contain exactly 5 products');
-    foreach ($data as $product) {
-        $assert(str_contains((string) ($product['image'] ?? ''), '/public/izdelki/'), 'Each product image should use /public/izdelki/ path');
-        $assert(str_ends_with((string) ($product['image'] ?? ''), '.jpg'), 'Each product image should end with .jpg');
-    }
+$runTest('seed SQL contains 5 products with valid image paths', static function () use ($assert): void {
+    $seedPath = dirname(__DIR__) . '/docker/mysql/init/002_seed_products.sql';
+    $seedSql = file_get_contents($seedPath);
+
+    $assert(is_string($seedSql), 'Seed SQL file should be readable');
+    $assert(substr_count($seedSql, '), \'/public/izdelki/izdelek-') === 5, 'Seed SQL should contain exactly 5 image entries in /public/izdelki/');
+    $assert(str_contains($seedSql, "(1, 'Brezžične Slušalke NovaSound'"), 'Seed SQL should include product id 1');
+    $assert(str_contains($seedSql, "(5, 'Miška Glide X'"), 'Seed SQL should include product id 5');
 });
 
 $runTest('required public assets exist', static function () use ($assert): void {

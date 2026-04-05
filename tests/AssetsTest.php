@@ -24,17 +24,14 @@ final class AssetsTest extends ProjectTestCaseBase
         }
     }
 
-    public function testProductsJsonUsesNewIzdelkiFolderPaths(): void
+    public function testSeedSqlContainsFiveProductsWithValidImagePaths(): void
     {
-        $jsonPath = dirname(__DIR__) . '/data/products.json';
-        $data = json_decode((string) file_get_contents($jsonPath), true);
+        $seedPath = dirname(__DIR__) . '/docker/mysql/init/002_seed_products.sql';
+        $seedSql = file_get_contents($seedPath);
 
-        self::assertIsArray($data);
-        self::assertCount(5, $data);
-
-        foreach ($data as $product) {
-            self::assertStringContainsString('/public/izdelki/', (string) ($product['image'] ?? ''));
-            self::assertStringEndsWith('.jpg', (string) ($product['image'] ?? ''));
-        }
+        self::assertIsString($seedSql);
+        self::assertSame(5, substr_count($seedSql, '), \'/public/izdelki/izdelek-'));
+        self::assertStringContainsString("(1, 'Brezžične Slušalke NovaSound'", $seedSql);
+        self::assertStringContainsString("(5, 'Miška Glide X'", $seedSql);
     }
 }
