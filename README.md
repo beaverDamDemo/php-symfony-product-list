@@ -116,6 +116,42 @@ To also remove DB volume data:
 docker compose down -v
 ```
 
+### Docker Hub: publish or update app image
+
+Docker Hub repository used in this project:
+
+- `bluestern/php-symfony-product-list`
+
+Before running Docker Hub commands, open terminal and run:
+
+```powershell
+docker login
+cd c/xampp/htdocs/php-symfony-product-list
+```
+
+Build and push latest image:
+
+```powershell
+docker build -t bluestern/php-symfony-product-list:latest .
+docker push bluestern/php-symfony-product-list:latest
+```
+
+Recommended: also push a version tag each time you update:
+
+```powershell
+docker tag bluestern/php-symfony-product-list:latest bluestern/php-symfony-product-list:v1
+docker push bluestern/php-symfony-product-list:v1
+```
+
+For a new update, repeat the same flow with a new version tag (for example `v2`, `v3`, ...).
+
+If you want Docker Compose to use Docker Hub image instead of local build, set app service to:
+
+```yaml
+app:
+  image: bluestern/php-symfony-product-list:latest
+```
+
 ### Database behavior
 
 - On first startup, MySQL runs `docker/mysql/init/001_schema.sql` and `docker/mysql/init/002_seed_products.sql`.
