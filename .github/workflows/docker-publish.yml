@@ -38,30 +38,37 @@ jobs:
 
       - name: Wait for MySQL and load schema/seed
         run: |
-          php -r "
+          cat > /tmp/init-db.php <<'PHP'
+          <?php
+
           $max = 30;
           $pdo = null;
           for ($i = 0; $i < $max; $i++) {
-            try {
-              $pdo = new PDO('mysql:host=127.0.0.1;port=3306;dbname=product_list;charset=utf8mb4', 'app', 'app', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-              break;
-            } catch (Throwable $e) {
-              usleep(1000000);
-            }
+              try {
+                  $pdo = new PDO('mysql:host=127.0.0.1;port=3306;dbname=product_list;charset=utf8mb4', 'app', 'app', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+                  break;
+              } catch (Throwable $e) {
+                  usleep(1000000);
+              }
           }
+
           if (!$pdo) {
-            fwrite(STDERR, 'MySQL did not become ready in time.' . PHP_EOL);
-            exit(1);
+              fwrite(STDERR, 'MySQL did not become ready in time.' . PHP_EOL);
+              exit(1);
           }
+
           $schema = file_get_contents('docker/mysql/init/001_schema.sql');
           $seed = file_get_contents('docker/mysql/init/002_seed_products.sql');
           if ($schema === false || $seed === false) {
-            fwrite(STDERR, 'Could not read SQL initialization files.' . PHP_EOL);
-            exit(1);
+              fwrite(STDERR, 'Could not read SQL initialization files.' . PHP_EOL);
+              exit(1);
           }
+
           $pdo->exec($schema);
           $pdo->exec($seed);
-          "
+          PHP
+
+          php /tmp/init-db.php
 
       - name: Install dependencies
         run: composer install --no-dev
