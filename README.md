@@ -242,3 +242,7 @@ php vendor/bin/phpunit -c phpunit.xml
 - Product images are expected in public/izdelki/ as izdelek-1.jpg through izdelek-5.jpg.
 - Shared header, logos, and navigation are rendered once in src/layout.php and reused across all pages.
 - Docker app container uses environment-based DB config (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`).
+
+## Coming soon
+
+instructions about github workflow
