@@ -150,35 +150,6 @@ function renderLayout(string $title, string $activeKey, string $contentHtml): Re
             {$contentHtml}
         </main>
     </div>
-
-    <div class="temporary temporary--gold">
-        <h1>Pričakujemo</h1>
-        <ul>
-            <li>osnovno poznavanje HTML, CSS in Bootrstrap</li>
-            <li>osnovno poznavanje Javascript (jQuery, vanilla javascript)</li>
-            <li>poznavanje logike CMS sistemov</li>
-            <li>poznavanje programskega jezika PHP</li>
-        </ul>
-    </div>
-    <div class="temporary temporary--navy">
-        <h2>Zaželena znanja (ki niso pogoj)</h2>
-        <ul>
-            <li>poznavanje modernih smernic spletnega razvoja in odzivnega (responsive) dizajna</li>
-            <li>poznavanje modernih tehnologij za frontend (CSS, SCSS, HTML, responsive design, Bootstrap, jQuery, React, Angular, VueJs) je prednost</li>
-            <li>poznavanje SEO smernic je prednost</li>
-        </ul>
-    </div>
-    <div class="temporary temporary--gold">
-        <h2>Zahteve naloge</h2>
-        <ul>
-            <li>V PHP-u (+CSS/SCSS, JS) narediti stran in podstran na podlagi dizajna</li>
-            <li>Stran s seznamom izdelkov naj vsebuje 5 izdelkov</li>
-            <li>Klik na gumb "več" pri izdelkih odpre podstran s prikazom enega izdelka</li>
-            <li>Uporabijo se lahko različni frameworki in knjižnice (PHP, CSS in JS)</li>
-            <li>Lahko se uporabi tudi kakšen template sistem</li>
-            <li>Stran naj bo responsive, prilagojen prikaz na mobitelih &lt;500px (na tablicah ni treba)</li>
-        </ul>
-    </div>
 </body>
 </html>
 HTML;
