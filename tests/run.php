@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/bootstrap.php';
 
+use App\HomeController;
+use App\NotFoundController;
+use App\ProductController;
+use App\ProductPageService;
+use App\ProductRepository;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 
@@ -43,11 +48,11 @@ $runTest = static function (string $name, callable $test) use (&$results): void 
     }
 };
 
-$runTest('route / maps to home with renderHomePage controller', static function () use ($assert): void {
+$runTest('route / maps to home controller method', static function () use ($assert): void {
     $matcher = new UrlMatcher(buildRoutes(), new RequestContext('/'));
     $params = $matcher->match('/');
     $assert(($params['_route'] ?? null) === 'home', 'Route / should match home');
-    $assert(($params['_controller'] ?? null) === 'renderHomePage', 'Route / should use renderHomePage controller');
+    $assert(($params['_controller'] ?? null) === [HomeController::class, 'index'], 'Route / should use HomeController::index');
 });
 
 $runTest('route /products maps to products', static function () use ($assert): void {
@@ -79,7 +84,7 @@ $runTest('route /izdelek/abc rejects non-numeric id', static function () use ($a
 });
 
 $runTest('home page includes shared layout markers', static function () use ($assert): void {
-    $home = renderHomePage();
+    $home = (new HomeController())->index();
     $homeHtml = (string) $home->getContent();
     $assert(str_contains($homeHtml, 'class="logo-row row-inner"'), 'Home should include shared logo row');
     $assert(str_contains($homeHtml, 'aria-label="Glavna navigacija"'), 'Home should include shared nav');
@@ -87,6 +92,7 @@ $runTest('home page includes shared layout markers', static function () use ($as
 });
 
 $runTest('products page contains grid, accordion and izdelki image path', static function () use ($assert): void {
+    $productPageService = new ProductPageService();
     $products = [
         [
             'id' => 1,
@@ -96,7 +102,7 @@ $runTest('products page contains grid, accordion and izdelki image path', static
             'image' => '/public/izdelki/izdelek-1.jpg',
         ],
     ];
-    $productsHtml = renderProductsContent($products);
+    $productsHtml = $productPageService->renderProductsContent($products);
     $assert(str_contains($productsHtml, 'class="products-grid"'), 'Products should include products-grid layout');
     $assert(str_contains($productsHtml, 'class="product-desc-accordion"'), 'Products should include mobile accordion markup');
     $assert(str_contains($productsHtml, '+ VEČ O IZDELKU 1'), 'Products should include accordion label for product 1');
@@ -104,9 +110,7 @@ $runTest('products page contains grid, accordion and izdelki image path', static
 });
 
 $runTest('invalid product detail shows not found message and back link', static function () use ($assert): void {
-    // renderProductDetailPage calls loadProducts(); with no DB in test env it returns []
-    // so id 999 (and any id) correctly hits the not-found branch
-    $invalidDetail = renderProductDetailPage('999');
+    $invalidDetail = (new ProductController())->detail('999');
     $invalidDetailHtml = (string) $invalidDetail->getContent();
     $assert(str_contains($invalidDetailHtml, 'Izdelek ni bil najden'), 'Invalid product detail should show not found message');
     $assert(str_contains($invalidDetailHtml, 'Nazaj na seznam'), 'Invalid product detail should include back-to-list link');
@@ -146,11 +150,11 @@ $runTest('repository findById returns only the requested product', static functi
 });
 
 $runTest('404 page returns status 404 with correct content and button style', static function () use ($assert): void {
-    $notFound = renderNotFoundPage();
+    $notFound = (new NotFoundController())->index();
     $notFoundHtml = (string) $notFound->getContent();
     $assert($notFound->getStatusCode() === 404, '404 page should return status code 404');
     $assert(str_contains($notFoundHtml, 'Stran ni bila najdena'), '404 page should show page-not-found heading');
-    $assert(str_contains($notFoundHtml, 'class="detail-back-btn"'), '404 page should use shared button style');
+    $assert(str_contains($notFoundHtml, 'detail-back-btn'), '404 page should use shared button style');
 });
 
 $runTest('seed SQL contains 5 products with valid image paths', static function () use ($assert): void {

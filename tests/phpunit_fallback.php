@@ -11,6 +11,7 @@ if (!class_exists('ProjectTestCaseBase')) {
             protected static function assertSame(mixed $expected, mixed $actual, string $message = ''): void {}
             protected static function assertCount(int $expectedCount, mixed $haystack, string $message = ''): void {}
             protected static function assertIsArray(mixed $actual, string $message = ''): void {}
+            protected static function assertIsString(mixed $actual, string $message = ''): void {}
             protected static function assertStringContainsString(string $needle, string $haystack, string $message = ''): void {}
             protected static function assertStringEndsWith(string $suffix, string $string, string $message = ''): void {}
             protected static function assertFileExists(string $filename, string $message = ''): void {}

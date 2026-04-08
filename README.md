@@ -150,7 +150,7 @@ composer test
 ```
 Running custom test checks...
 
-● PASS  route / maps to home with renderHomePage controller
+● PASS  route / maps to home controller method
 ● PASS  route /products maps to products
 ● PASS  route /izdelki maps to products_sl
 ● PASS  route /izdelek/3 maps to product_detail with id=3

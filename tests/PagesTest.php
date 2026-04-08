@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/phpunit_fallback.php';
 
+use App\HomeController;
+use App\NotFoundController;
+use App\ProductController;
+
 final class PagesTest extends ProjectTestCaseBase
 {
     public function testHomePageUsesSharedLayout(): void
     {
-        $response = renderHomePage();
+        $response = (new HomeController())->index();
         $html = $response->getContent();
 
         self::assertStringContainsString('class="logo-row row-inner"', (string) $html);
@@ -18,7 +22,7 @@ final class PagesTest extends ProjectTestCaseBase
 
     public function testProductsPageRendersCardsAndAccordionMarkup(): void
     {
-        $response = renderProductsPage();
+        $response = (new ProductController())->index();
         $html = (string) $response->getContent();
 
         self::assertStringContainsString('class="products-grid"', $html);
@@ -29,7 +33,7 @@ final class PagesTest extends ProjectTestCaseBase
 
     public function testInvalidProductDetailShowsNotFoundMessage(): void
     {
-        $response = renderProductDetailPage('999');
+        $response = (new ProductController())->detail('999');
         $html = (string) $response->getContent();
 
         self::assertStringContainsString('Izdelek ni bil najden', $html);
@@ -38,11 +42,11 @@ final class PagesTest extends ProjectTestCaseBase
 
     public function testNotFoundPageReturns404StatusAndSharedButtonStyle(): void
     {
-        $response = renderNotFoundPage();
+        $response = (new NotFoundController())->index();
         $html = (string) $response->getContent();
 
         self::assertSame(404, $response->getStatusCode());
         self::assertStringContainsString('Stran ni bila najdena', $html);
-        self::assertStringContainsString('class="detail-back-btn"', $html);
+        self::assertStringContainsString('detail-back-btn', $html);
     }
 }

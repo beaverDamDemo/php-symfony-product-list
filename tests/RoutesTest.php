@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/phpunit_fallback.php';
 
+use App\HomeController;
+use App\ProductController;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 
@@ -15,7 +17,7 @@ final class RoutesTest extends ProjectTestCaseBase
         $params = $matcher->match('/');
 
         self::assertSame('home', $params['_route']);
-        self::assertSame('renderHomePage', $params['_controller']);
+        self::assertSame([HomeController::class, 'index'], $params['_controller']);
     }
 
     public function testProductsRoutesMatch(): void
