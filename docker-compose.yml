@@ -5,6 +5,8 @@ services:
     container_name: php-symfony-product-list-app
     ports:
       - "8080:80"
+    volumes:
+      - ./:/var/www/html
     environment:
       DB_HOST: mysql
       DB_PORT: "3306"

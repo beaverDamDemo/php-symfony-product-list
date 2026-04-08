@@ -125,10 +125,10 @@ function renderProductDetailPage(string $id): Response
 
     if (!is_array($product)) {
         return renderLayout('404 – Izdelek ni najden', 'products', '
-            <section style="text-align:center; padding: 48px 0;">
-                <h1>Izdelek ni bil najden</h1>
+            <section class="message-panel message-panel--centered">
+                <h1 class="message-panel-title">Izdelek ni bil najden</h1>
                 <a href="' . htmlspecialchars(getBasePath() . '/public/izdelki', ENT_QUOTES, 'UTF-8') . '"
-                   style="color:#5ea1e1; font-weight:700;">← Nazaj na seznam</a>
+                   class="message-panel-link">← Nazaj na seznam</a>
             </section>
         ');
     }
