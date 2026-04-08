@@ -15,6 +15,7 @@ The app includes:
 - PHP 8
 - symfony/routing
 - symfony/http-foundation
+- .env based application configuration
 - Apache + .htaccess rewriting
 - MySQL 8
 - Docker + Docker Compose
@@ -22,13 +23,17 @@ The app includes:
 ## Project Structure
 
 - public/index.php: front controller and request dispatch
+- config/bootstrap.php: environment bootstrap from .env
 - src/layout.php: shared HTML shell and global CSS
-- src/home.php: home page content
-- src/products.php: product list/detail rendering and data loading
+- src/Kernel.php: request handling, routing dispatch, and fallback handling
+- src/Container.php: lightweight service container for controller/service/repository wiring
+- src/HomeController.php: home page controller
+- src/ProductController.php: product list and detail controller
+- src/NotFoundController.php: 404 controller
+- src/ProductPageService.php: page-oriented product content rendering service
 - src/database.php: PDO database connection from environment variables
 - src/ProductRepository.php: product queries and row mapping
-- src/not_found.php: 404 page rendering
-- src/routes.php: centralized route definitions
+- src/RouteProvider.php: centralized route definitions
 - docker-compose.yml: app + mysql services
 - docker/mysql/init/
   - 001_schema.sql: MySQL schema
@@ -65,9 +70,11 @@ From the project root:
 docker compose up --build
 ```
 
+No extra setup is required: if `.env` is missing, the app automatically falls back to `.env.example`.
+
 App URL:
 
-- http://localhost:8080/public
+- http://localhost:8080
 
 ### Adminer (database UI)
 
@@ -112,7 +119,19 @@ docker compose down -v
 ### Database behavior
 
 - On first startup, MySQL runs `docker/mysql/init/001_schema.sql` and `docker/mysql/init/002_seed_products.sql`.
-- The app reads products from MySQL using environment variables `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD`.
+- The app reads products from MySQL using environment variables `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` loaded from `.env` (with Docker overrides in `docker-compose.yml`).
+
+## GitHub / Docker Hub publishing
+
+- Commit `.env.example` to the repository.
+- Keep `.env` local only (it is ignored via `.gitignore`).
+- Runtime works out of the box without `.env`; defaults are loaded from `.env.example` automatically.
+- If `.env` was committed earlier, untrack it once with:
+
+```powershell
+git rm --cached .env
+git commit -m "Stop tracking local .env"
+```
 
 ## Tests
 

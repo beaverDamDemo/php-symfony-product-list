@@ -6,11 +6,17 @@ require_once __DIR__ . '/bootstrap.php';
 
 use App\HomeController;
 use App\NotFoundController;
+use App\Container;
 use App\ProductController;
 use App\ProductPageService;
 use App\ProductRepository;
+use App\RouteProvider;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
+
+$container = new Container();
+$routeProvider = new RouteProvider();
+$routes = $routeProvider->createRoutes();
 
 $isTty = true;
 if (function_exists('stream_isatty')) {
@@ -49,31 +55,36 @@ $runTest = static function (string $name, callable $test) use (&$results): void 
 };
 
 $runTest('route / maps to home controller method', static function () use ($assert): void {
-    $matcher = new UrlMatcher(buildRoutes(), new RequestContext('/'));
+    global $routes;
+    $matcher = new UrlMatcher($routes, new RequestContext('/'));
     $params = $matcher->match('/');
     $assert(($params['_route'] ?? null) === 'home', 'Route / should match home');
     $assert(($params['_controller'] ?? null) === [HomeController::class, 'index'], 'Route / should use HomeController::index');
 });
 
 $runTest('route /products maps to products', static function () use ($assert): void {
-    $matcher = new UrlMatcher(buildRoutes(), new RequestContext('/'));
+    global $routes;
+    $matcher = new UrlMatcher($routes, new RequestContext('/'));
     $assert(($matcher->match('/products')['_route'] ?? null) === 'products', 'Route /products should match products');
 });
 
 $runTest('route /izdelki maps to products_sl', static function () use ($assert): void {
-    $matcher = new UrlMatcher(buildRoutes(), new RequestContext('/'));
+    global $routes;
+    $matcher = new UrlMatcher($routes, new RequestContext('/'));
     $assert(($matcher->match('/izdelki')['_route'] ?? null) === 'products_sl', 'Route /izdelki should match products_sl');
 });
 
 $runTest('route /izdelek/3 maps to product_detail with id=3', static function () use ($assert): void {
-    $matcher = new UrlMatcher(buildRoutes(), new RequestContext('/'));
+    global $routes;
+    $matcher = new UrlMatcher($routes, new RequestContext('/'));
     $detail = $matcher->match('/izdelek/3');
     $assert(($detail['_route'] ?? null) === 'product_detail', 'Route /izdelek/3 should match product_detail');
     $assert((string) ($detail['id'] ?? '') === '3', 'Route /izdelek/3 should keep id=3');
 });
 
 $runTest('route /izdelek/abc rejects non-numeric id', static function () use ($assert): void {
-    $matcher = new UrlMatcher(buildRoutes(), new RequestContext('/'));
+    global $routes;
+    $matcher = new UrlMatcher($routes, new RequestContext('/'));
     $threw = false;
     try {
         $matcher->match('/izdelek/abc');
@@ -84,15 +95,17 @@ $runTest('route /izdelek/abc rejects non-numeric id', static function () use ($a
 });
 
 $runTest('home page includes shared layout markers', static function () use ($assert): void {
-    $home = (new HomeController())->index();
+    global $container;
+    $home = $container->getHomeController()->index();
     $homeHtml = (string) $home->getContent();
     $assert(str_contains($homeHtml, 'class="logo-row row-inner"'), 'Home should include shared logo row');
     $assert(str_contains($homeHtml, 'aria-label="Glavna navigacija"'), 'Home should include shared nav');
-    $assert(str_contains($homeHtml, '/public/tinified/logo.png'), 'Home should include logo image path');
+    $assert(str_contains($homeHtml, '/tinified/logo.png'), 'Home should include logo image path');
 });
 
 $runTest('products page contains grid, accordion and izdelki image path', static function () use ($assert): void {
-    $productPageService = new ProductPageService();
+    global $container;
+    $productPageService = $container->getProductPageService();
     $products = [
         [
             'id' => 1,
@@ -106,11 +119,12 @@ $runTest('products page contains grid, accordion and izdelki image path', static
     $assert(str_contains($productsHtml, 'class="products-grid"'), 'Products should include products-grid layout');
     $assert(str_contains($productsHtml, 'class="product-desc-accordion"'), 'Products should include mobile accordion markup');
     $assert(str_contains($productsHtml, '+ VEČ O IZDELKU 1'), 'Products should include accordion label for product 1');
-    $assert(str_contains($productsHtml, '/public/izdelki/izdelek-1.jpg'), 'Products should use new izdelki image folder paths');
+    $assert(str_contains($productsHtml, '/izdelki/izdelek-1.jpg'), 'Products should use image paths for public docroot');
 });
 
 $runTest('invalid product detail shows not found message and back link', static function () use ($assert): void {
-    $invalidDetail = (new ProductController())->detail('999');
+    global $container;
+    $invalidDetail = $container->getProductController()->detail('999');
     $invalidDetailHtml = (string) $invalidDetail->getContent();
     $assert(str_contains($invalidDetailHtml, 'Izdelek ni bil najden'), 'Invalid product detail should show not found message');
     $assert(str_contains($invalidDetailHtml, 'Nazaj na seznam'), 'Invalid product detail should include back-to-list link');
@@ -150,7 +164,8 @@ $runTest('repository findById returns only the requested product', static functi
 });
 
 $runTest('404 page returns status 404 with correct content and button style', static function () use ($assert): void {
-    $notFound = (new NotFoundController())->index();
+    global $container;
+    $notFound = $container->getNotFoundController()->index();
     $notFoundHtml = (string) $notFound->getContent();
     $assert($notFound->getStatusCode() === 404, '404 page should return status code 404');
     $assert(str_contains($notFoundHtml, 'Stran ni bila najdena'), '404 page should show page-not-found heading');

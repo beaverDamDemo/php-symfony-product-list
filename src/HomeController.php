@@ -10,7 +10,7 @@ final class HomeController
 {
     public function index(): Response
     {
-        $homeImageSrc = htmlspecialchars(getBasePath() . '/public/Copilot_20260402_230309.jpg', ENT_QUOTES, 'UTF-8');
+        $homeImageSrc = htmlspecialchars(\assetUrl('/Copilot_20260402_230309.jpg'), ENT_QUOTES, 'UTF-8');
 
         return renderLayout('Domov', 'home', '
             <section class="home-hero">

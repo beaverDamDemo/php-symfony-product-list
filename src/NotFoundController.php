@@ -21,7 +21,7 @@ final class NotFoundController
                 <p class="not-found-text">
                     Naslov, ki ste ga vnesli, ne obstaja ali je bil premaknjen.
                 </p>
-                <a class="detail-back-btn not-found-link" href="' . getBasePath() . '/public">
+                <a class="detail-back-btn not-found-link" href="' . \routeUrl() . '">
                     ← Nazaj na domačo stran
                 </a>
             </section>

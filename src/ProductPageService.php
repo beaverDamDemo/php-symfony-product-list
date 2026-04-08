@@ -6,22 +6,24 @@ namespace App;
 
 final class ProductPageService
 {
+    public function __construct(private ?ProductRepository $productRepository = null) {}
+
     public function loadProducts(): array
     {
-        if (!hasDatabaseConfig()) {
+        if ($this->productRepository === null) {
             return [];
         }
 
-        return $this->createRepository()->findAll();
+        return $this->productRepository->findAll();
     }
 
     public function loadProductById(int $id): ?array
     {
-        if (!hasDatabaseConfig()) {
+        if ($this->productRepository === null) {
             return null;
         }
 
-        return $this->createRepository()->findById($id);
+        return $this->productRepository->findById($id);
     }
 
     public function renderProductsContent(array $products): string
@@ -36,12 +38,11 @@ final class ProductPageService
         }
 
         $cards = '';
-        $basePath = getBasePath();
         foreach ($products as $index => $product) {
             $productId = (int) ($product['id'] ?? ($index + 1));
             $rawImage = $product['image'] !== ''
-                ? $basePath . $product['image']
-                : $basePath . '/public/izdelek-' . $productId . '.png';
+                ? \assetUrl((string) $product['image'])
+                : \assetUrl('/izdelek-' . $productId . '.png');
             $imageSrc = htmlspecialchars($rawImage, ENT_QUOTES, 'UTF-8');
             $name = htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8');
             $subtitle = htmlspecialchars($product['subtitle'], ENT_QUOTES, 'UTF-8');
@@ -50,7 +51,7 @@ final class ProductPageService
                 $descHtml .= '<p class="product-description">' . htmlspecialchars($paragraph, ENT_QUOTES, 'UTF-8') . '</p>';
             }
 
-            $detailHref = htmlspecialchars($basePath . '/public/izdelek/' . $productId, ENT_QUOTES, 'UTF-8');
+            $detailHref = htmlspecialchars(\routeUrl('/izdelek/' . $productId), ENT_QUOTES, 'UTF-8');
 
             $cards .= '
                 <article class="product-card">
@@ -78,15 +79,14 @@ final class ProductPageService
 
     public function renderProductDetailContent(array $product, int $serialNumber): string
     {
-        $basePath = getBasePath();
         $rawImage = $product['image'] !== ''
-            ? $basePath . $product['image']
-            : $basePath . '/public/izdelek-' . $serialNumber . '.png';
+            ? \assetUrl((string) $product['image'])
+            : \assetUrl('/izdelek-' . $serialNumber . '.png');
 
         $imageSrc = htmlspecialchars($rawImage, ENT_QUOTES, 'UTF-8');
         $name = htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8');
         $subtitle = htmlspecialchars($product['subtitle'], ENT_QUOTES, 'UTF-8');
-        $backHref = htmlspecialchars($basePath . '/public/izdelki', ENT_QUOTES, 'UTF-8');
+        $backHref = htmlspecialchars(\routeUrl('/izdelki'), ENT_QUOTES, 'UTF-8');
 
         $descHtml = '';
         foreach ($product['description'] as $paragraph) {
@@ -111,14 +111,9 @@ final class ProductPageService
         return '
             <section class="message-panel message-panel--centered">
                 <h1 class="message-panel-title">Izdelek ni bil najden</h1>
-                <a href="' . htmlspecialchars(getBasePath() . '/public/izdelki', ENT_QUOTES, 'UTF-8') . '"
+                     <a href="' . htmlspecialchars(\routeUrl('/izdelki'), ENT_QUOTES, 'UTF-8') . '"
                    class="message-panel-link">← Nazaj na seznam</a>
             </section>
         ';
-    }
-
-    private function createRepository(): ProductRepository
-    {
-        return new ProductRepository(getDatabaseConnection());
     }
 }

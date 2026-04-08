@@ -6,6 +6,7 @@ require_once __DIR__ . '/phpunit_fallback.php';
 
 use App\HomeController;
 use App\ProductController;
+use App\RouteProvider;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 
@@ -13,7 +14,7 @@ final class RoutesTest extends ProjectTestCaseBase
 {
     public function testHomeRouteMatches(): void
     {
-        $matcher = new UrlMatcher(buildRoutes(), new RequestContext('/'));
+        $matcher = new UrlMatcher((new RouteProvider())->createRoutes(), new RequestContext('/'));
         $params = $matcher->match('/');
 
         self::assertSame('home', $params['_route']);
@@ -22,7 +23,7 @@ final class RoutesTest extends ProjectTestCaseBase
 
     public function testProductsRoutesMatch(): void
     {
-        $matcher = new UrlMatcher(buildRoutes(), new RequestContext('/'));
+        $matcher = new UrlMatcher((new RouteProvider())->createRoutes(), new RequestContext('/'));
 
         self::assertSame('products', $matcher->match('/products')['_route']);
         self::assertSame('products_sl', $matcher->match('/izdelki')['_route']);
@@ -30,7 +31,7 @@ final class RoutesTest extends ProjectTestCaseBase
 
     public function testProductDetailRouteMatchesNumericId(): void
     {
-        $matcher = new UrlMatcher(buildRoutes(), new RequestContext('/'));
+        $matcher = new UrlMatcher((new RouteProvider())->createRoutes(), new RequestContext('/'));
         $params = $matcher->match('/izdelek/3');
 
         self::assertSame('product_detail', $params['_route']);
@@ -39,7 +40,7 @@ final class RoutesTest extends ProjectTestCaseBase
 
     public function testProductDetailRouteRejectsNonNumericId(): void
     {
-        $matcher = new UrlMatcher(buildRoutes(), new RequestContext('/'));
+        $matcher = new UrlMatcher((new RouteProvider())->createRoutes(), new RequestContext('/'));
 
         $this->expectException(\Throwable::class);
         $matcher->match('/izdelek/abc');

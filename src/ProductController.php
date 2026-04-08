@@ -8,10 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ProductController
 {
-    public function __construct(private ?ProductPageService $productPageService = null)
-    {
-        $this->productPageService ??= new ProductPageService();
-    }
+    public function __construct(private ProductPageService $productPageService) {}
 
     public function index(): Response
     {

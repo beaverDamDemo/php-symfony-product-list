@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 function getEnvValue(string $key, ?string $default = null): ?string
 {
-    $value = getenv($key);
+    $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
     if ($value === false || $value === '') {
         return $default;
     }
