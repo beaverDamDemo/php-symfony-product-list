@@ -126,7 +126,7 @@ Before running Docker Hub commands, open terminal and run:
 
 ```powershell
 docker login
-cd c/xampp/htdocs/php-symfony-product-list
+cd C:/xampp/htdocs/php-symfony-product-list
 ```
 
 Build and push latest image:
@@ -243,6 +243,33 @@ php vendor/bin/phpunit -c phpunit.xml
 - Shared header, logos, and navigation are rendered once in src/layout.php and reused across all pages.
 - Docker app container uses environment-based DB config (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`).
 
-## Coming soon
+## GitHub Actions auto-publish (working setup)
 
-instructions about github workflow
+This repository now supports automatic Docker Hub publishing via GitHub Actions.
+
+Workflow file:
+
+- `.github/workflows/docker-publish.yml`
+
+Current behavior on push to `docker-release`:
+
+1. Starts MySQL service in CI.
+2. Loads schema and seed SQL from `docker/mysql/init/`.
+3. Runs project tests (`php tests/run.php`).
+4. Logs in to Docker Hub using repository secrets.
+5. Builds and pushes image `bluestern/php-symfony-product-list:latest`.
+
+Required GitHub repository secrets:
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+
+Recommended release flow:
+
+1. Develop and test on `main`.
+2. Merge `main` into `docker-release` when ready to publish.
+3. Push `docker-release`.
+4. Confirm green run in GitHub Actions.
+5. Confirm updated `latest` tag timestamp on Docker Hub.
+
+If the workflow fails, open the first failed step in Actions logs and fix that step before re-running.
