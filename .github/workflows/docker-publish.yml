@@ -6,6 +6,27 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: product_list
+          MYSQL_USER: app
+          MYSQL_PASSWORD: app
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_NAME: product_list
+      DB_USER: app
+      DB_PASSWORD: app
     steps:
       - uses: actions/checkout@v5
 
@@ -13,6 +34,34 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
+          extensions: pdo_mysql
+
+      - name: Wait for MySQL and load schema/seed
+        run: |
+          php -r "
+          $max = 30;
+          $pdo = null;
+          for ($i = 0; $i < $max; $i++) {
+            try {
+              $pdo = new PDO('mysql:host=127.0.0.1;port=3306;dbname=product_list;charset=utf8mb4', 'app', 'app', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+              break;
+            } catch (Throwable $e) {
+              usleep(1000000);
+            }
+          }
+          if (!$pdo) {
+            fwrite(STDERR, 'MySQL did not become ready in time.' . PHP_EOL);
+            exit(1);
+          }
+          $schema = file_get_contents('docker/mysql/init/001_schema.sql');
+          $seed = file_get_contents('docker/mysql/init/002_seed_products.sql');
+          if ($schema === false || $seed === false) {
+            fwrite(STDERR, 'Could not read SQL initialization files.' . PHP_EOL);
+            exit(1);
+          }
+          $pdo->exec($schema);
+          $pdo->exec($seed);
+          "
 
       - name: Install dependencies
         run: composer install --no-dev
