@@ -17,15 +17,27 @@ function getBasePath(): string
     return '';
 }
 
+function joinAppPath(string $base, string $path = ''): string
+{
+    $normalizedBase = rtrim($base, '/');
+    $normalizedPath = ltrim($path, '/');
+
+    if ($normalizedPath === '') {
+        return $normalizedBase !== '' ? $normalizedBase : '/';
+    }
+
+    if ($normalizedBase === '') {
+        return '/' . $normalizedPath;
+    }
+
+    return $normalizedBase . '/' . $normalizedPath;
+}
+
 function appUrl(string $path = ''): string
 {
     $base = getBasePath();
 
-    if ($path === '') {
-        return $base !== '' ? $base : '/';
-    }
-
-    return ($base !== '' ? $base : '') . '/' . ltrim($path, '/');
+    return joinAppPath($base, $path);
 }
 
 function isPublicDocumentRoot(): bool
@@ -73,11 +85,7 @@ function routeUrl(string $path = ''): string
 {
     $base = routeBasePath();
 
-    if ($path === '') {
-        return $base !== '' ? $base : '/';
-    }
-
-    return ($base !== '' ? $base : '') . '/' . ltrim($path, '/');
+    return joinAppPath($base, $path);
 }
 
 function assetUrl(string $path): string

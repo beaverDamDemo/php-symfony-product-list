@@ -96,11 +96,15 @@ $runTest('route /izdelek/abc rejects non-numeric id', static function () use ($a
 
 $runTest('home page includes shared layout markers', static function () use ($assert): void {
     global $container;
+    $_SERVER['SCRIPT_NAME'] = '/index.php';
+    $_SERVER['DOCUMENT_ROOT'] = '/var/www/html/public';
     $home = $container->getHomeController()->index();
     $homeHtml = (string) $home->getContent();
     $assert(str_contains($homeHtml, 'class="logo-row row-inner"'), 'Home should include shared logo row');
     $assert(str_contains($homeHtml, 'aria-label="Glavna navigacija"'), 'Home should include shared nav');
     $assert(str_contains($homeHtml, '/tinified/logo.png'), 'Home should include logo image path');
+    $assert(str_contains($homeHtml, 'href="/izdelki"'), 'Home nav should link to /izdelki at web root');
+    $assert(!str_contains($homeHtml, 'href="//izdelki"'), 'Home nav should not generate protocol-relative //izdelki links');
 });
 
 $runTest('products page contains grid, accordion and izdelki image path', static function () use ($assert): void {
